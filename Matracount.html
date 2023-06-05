@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body {
+		  font-family: Arial, sans-serif;
+		  display: flex;
+		  justify-content: center;
+		  align-items: center;
+		  margin: 0;
+		}
+
+		.container {
+		  width: 80%;
+		  max-width: 75%;
+		  padding: 20px;
+		  border-radius: 5px;
+          overflow-y: scroll;
+		  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+		}
+
+		.heading {
+		  text-align: center;
+		  font-size: 24px;
+		  color: #333;
+		  margin-top: 0;
+		}
+
+		.content {
+		  border: 1px solid #ccc;
+		  padding: 10px;
+		  text-align: center; /* Align buttons in the center */
+		}
+
+		textarea {
+		  width: 100%;
+		  height: 200px;
+		  resize: none;
+		  padding: 5px;
+		  border: none;
+		  border-bottom: 1px solid #ccc;
+		  border-radius: 3px;
+		  margin-bottom: 10px;
+		}
+
+		#countButton,
+		#clearButton {
+		  display: inline-block;
+		  margin: 0 5px; /* Add some space between buttons */
+		  padding: 10px 20px;
+		  background-color: #4CAF50;
+		  color: #fff;
+		  border: none;
+		  border-radius: 3px;
+		  cursor: pointer;
+		}
+
+		#charCount {
+		  margin-top: 10px;
+		  font-weight: bold;
+		}
+
+		.table-container {
+		  margin-top: 20px;
+		  overflow-x: auto;
+		  margin-bottom: 20px; /* Add margin at the bottom for space between tables */
+		}
+
+		.table-container table {
+		  width: 100%;
+		  border-collapse: collapse;
+		  border: 1px solid #ccc;
+		  margin-bottom: 20px; /* Add margin at the bottom for space between tables */
+		}
+
+		.table-container th,
+		.table-container td {
+		  border: 1px solid #ccc;
+		  padding: 8px;
+		  text-align: center;
+		}
+
+		.table-container th {
+		  
+		  font-weight: bold;
+		}
+
+		.table-container td:first-child {
+		  text-align: left;
+		}
+		.footer {
+		  margin-top: 20px;
+		  text-align: center;
+		}
+
+		.footer p {
+		  margin: 5px 0;
+		  font-size: 14px;
+		  color: #888;
+		}
+        #tableContainer {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+#matraTable {
+  width: 100%;
+  border-collapse: collapse;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+#matraTable td {
+  border: 2px solid #ccc;
+  padding: 8px;
+}
+
+#matraTable th {
+  border: 2px solid #ccc;
+  padding: 8px;
+}
+
+#matraTable th:first-child {
+  text-align: left;
+}
+	</style>
+  <title>गंगाधर शर्मा  कविता </title>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <div class="container">
+    <h1 class="heading">काव्य मात्रा भार</h1>
+
+    <div class="content">
+      <textarea id="textArea" placeholder="कविता यहा डाले..."></textarea>
+      <button id="countButton">मात्र गिने</button>
+      <button id="clearButton">साफ करें</button>
+      <div id="tableContainer">
+        <table id="matraTable"></table>
+      </div>
+      <div id="charCount"></div>
+    </div>
+    
+    <footer class="footer">
+      <p>Developed by Panchang Bhardwaj</p>
+      <p>Contact Email: panchangbhardwaj@gmail.com</p>
+    </footer>
+  </div>
+
+  <script>
+    var tableEnable = false;
+document.getElementById("countButton").addEventListener("click", function() {
+  var text = document.getElementById("textArea").value;
+  var matraCount = countMatra(text);
+tableEnable = true;
+  document.getElementById("charCount").innerText = "Total characters: " + matraCount;
+  updateTable(text);
+});
+
+document.getElementById("clearButton").addEventListener("click", function() {
+  document.getElementById("textArea").value = "";
+tableEnable = false;
+  document.getElementById("charCount").innerText = "Total characters: 0";
+  clearTable();
+});
+
+document.getElementById("textArea").addEventListener("input", function() {
+  var text = document.getElementById("textArea").value;
+  var matraCount = countMatra(text);
+  document.getElementById("charCount").innerText = "Total characters: " + matraCount;
+  updateTable(text);
+});
+
+function countMatra(text) {
+  let validLetters = /[ऀ-ॿ]/g;
+  let laghu_swar = ['ऋ', 'ृ', 'ि', 'ु', '्', 'ँ', '्', 'र्', 'ं'];
+  let dhirg_swar = ['ा', 'ी', 'ू', 'े', 'ै', 'ो', 'ौ', 'ं', 'ः'];
+  let up_matra = ['आ', 'ई', 'ऊ', 'ए', 'ऐ', 'ओ', 'औ'];
+  let total = 0;
+
+  let validText = text.match(validLetters);
+
+  if (validText !== null) {
+    for (let i = 0; i < validText.length; i++) {
+      let letter = validText[i];
+
+      if (!laghu_swar.includes(letter)) {
+        if (up_matra.includes(letter)) {
+          total += 2;
+        } else {
+          total += 1;
+        }
+      }
+    }
+  }
+
+  return total;
+}
+
+function updateTable(text) {
+  let tableContainer = document.getElementById("tableContainer");
+  let tables = tableContainer.getElementsByTagName("table");
+
+  // Clear previous tables
+  while (tables.length > 0) {
+    tables[0].remove();
+  }
+
+  let lines = text.split("\n");
+
+  for (let j = 0; j < lines.length; j++) {
+    let line = lines[j].trim();
+
+    if (line !== "") {
+      let table = document.createElement("table");
+      table.id = "matraTable";
+      //table.classList.add("matra-table");
+
+      let row1 = table.insertRow();
+      let row2 = table.insertRow();
+
+      let previousColor = "";
+      let lineCount = 0; // Initialize line count variable
+
+      for (let i = 0; i < line.length; i++) {
+        let letter = line[i];
+        let count = countMatra(letter);
+
+        let cell1 = row1.insertCell(i);
+        let cell2 = row2.insertCell(i);
+
+        cell1.innerHTML = letter;
+        cell2.innerHTML = (letter.trim() === "" || count === 0) ? "" : count;
+
+        let color = getUniqueColor(previousColor);
+          console.log('color -- '+color);
+        let lighterColor = getlighterRGB(color) ;
+          console.log('lighter color -- ',lighterColor);
+        cell1.style.color = color;
+        cell1.style.backgroundColor = lighterColor;
+        cell1.style.fontWeight = "bold";
+        cell2.style.color = color;
+        cell2.style.backgroundColor = lighterColor;
+        cell2.style.fontWeight = "bold";
+
+        previousColor = color;
+
+        // Update line count
+        lineCount += count;
+      }
+
+      // Add the line count at the end of the table
+      let countCell = row2.insertCell(line.length);
+      countCell.innerHTML = lineCount;
+      countCell.style.color = "#000";
+      countCell.style.fontWeight = "bold";
+      if(tableEnable){
+        tableContainer.appendChild(table);   
+      }
+    }
+  }
+}
+
+function getlighterRGB(color){
+    if(color === 'red'){
+       return 'Pink'
+       }
+    if(color === 'green'){
+        return 'PaleGreen'
+    }
+    if(color === 'blue'){
+        return 'PaleTurquoise'
+    }
+    if(color === 'orange'){
+       return 'PeachPuff'
+       }
+    if(color === 'purple'){
+       return 'Plum'
+       }
+}
+function getUniqueColor(previousColor) {
+  const colors = ["red", "green", "blue", "orange", "purple"];
+
+  if (previousColor === "") {
+    return colors[0];
+  }
+
+  let currentIndex = colors.indexOf(previousColor);
+  let nextIndex = (currentIndex + 1) % colors.length;
+  return colors[nextIndex];
+}
+
+function clearTable() {
+  let tableContainer = document.getElementById("tableContainer");
+  tableContainer.innerHTML = "";
+}
+
+
+  </script>
+</body>
+</html>
